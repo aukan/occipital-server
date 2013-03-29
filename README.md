@@ -1,4 +1,4 @@
-occipital-node-server
+occipital-server
 =====================
 
 Occipital Server using node.
