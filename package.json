@@ -1,0 +1,10 @@
+{
+    "name"         : "occipital-server",
+    "description"  : "Occipital Server - Image Processing Server.",
+    "version"      : "0.0.1",
+    "private"      : true,
+    "dependencies" : {
+        "neon"      : "1.x",
+        "occipital" : "0.0.1"
+    }
+}
