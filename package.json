@@ -5,6 +5,6 @@
     "private"      : true,
     "dependencies" : {
         "neon"      : "1.x",
-        "occipital" : "0.0.1"
+        "occipital" : "git+ssh://git@github.com:aukan/occipital.git"
     }
 }
