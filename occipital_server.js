@@ -1,13 +1,12 @@
 var Ne = require('neon');
 var Occipital = require('occipital');
-var exec = require('child_process').exec;
-
-Occipital.Server = {};
 
 Ne.Class(Occipital, 'Server')({
     prototype        : {
         path         : require('path'),
         fs           : require('fs'),
+        exec         : require('child_process').exec,
+        occipital    : require('occipital'),
         express      : require('express'),
         http         : require('http'),
         app          : null,
@@ -34,6 +33,7 @@ Ne.Class(Occipital, 'Server')({
             this.storagePath = this.config.storage.basePath;
 
             this.app = this.express();
+            this.lobe = new this.occipital.Lobe({ 'utilityWrapper' : this.config.occipitalUtilityWrapper });
             this.server = new this.http.createServer(this.app);
             this.initRack();
             this.initRoutes();
@@ -54,38 +54,38 @@ Ne.Class(Occipital, 'Server')({
         },
 
         initRoutes : function initRoutes () {
-            var occ = this;
+            var occs = this;
 
             this.app.get('*', function (req, res) {
-                var params = occ._getOccipitalParams(req);
+                var params = occs._getOccipitalParams(req);
                 var originalImagePath, requestedImagePath;
 
                 if (params) {
-                    originalImagePath = occ.path.join(occ.config.storage.basePath, occ.path.dirname(req.url), '/' + params.fileName + '.' + params.extension );
-                    requestedImagePath = occ.path.join(occ.config.storage.basePath, occ.path.dirname(req.url), '/' + params.fullFileName );
+                    originalImagePath = occs.path.join(occs.config.storage.basePath, occs.path.dirname(req.url), '/' + params.fileName + '.' + params.extension );
+                    requestedImagePath = occs.path.join(occs.config.storage.basePath, occs.path.dirname(req.url), '/' + params.fullFileName );
 
-                    occ.fs.exists(originalImagePath, function(originalExists) {
+                    occs.fs.exists(originalImagePath, function(originalExists) {
 
                         if (originalExists ) {
                             // Generate new image based on parameters.
-                            occ._generateNewImage(originalImagePath, requestedImagePath, params);
+                            occs._generateNewImage(originalImagePath, requestedImagePath, params);
                             res.sendfile(requestedImagePath);
 
                         } else {
-                            originalImageUrl = occ.path.join('/', occ.path.dirname(req.url), '/' + params.fileName + '.' + params.extension);
+                            originalImageUrl = occs.path.join('/', occs.path.dirname(req.url), '/' + params.fileName + '.' + params.extension);
 
                             // Fetch for original image if there is a fallbackServer.
-                            if (occ.config.fallbackServer) {
-                                exec('mkdir -p ' + occ.path.dirname(originalImagePath), function (error, stdout, stderr) {
-                                    exec('curl ' + occ.config.fallbackServer + originalImageUrl + ' -o ' + originalImagePath + ' --retry 2 -m 5 -f -s', function (error, stdout, stderr) {
+                            if (occs.config.fallbackServer) {
+                                occs.exec('mkdir -p ' + occs.path.dirname(originalImagePath), function (error, stdout, stderr) {
+                                    occs.exec('curl ' + occs.config.fallbackServer + originalImageUrl + ' -o ' + originalImagePath + ' --retry 2 -m 5 -f -s', function (error, stdout, stderr) {
 
                                         if (error !== null) {
-                                            exec('rmdir -p ' + occ.path.dirname(originalImagePath), function (error, stdout, stderr) {
+                                            occs.exec('rmdir -p ' + occs.path.dirname(originalImagePath), function (error, stdout, stderr) {
                                                 res.send(404, 'Not found');
                                             });
                                         } else {
                                             // Generate new image based on parameters.
-                                            occ._generateNewImage(originalImagePath, requestedImagePath, params);
+                                            occs._generateNewImage(originalImagePath, requestedImagePath, params);
                                             res.sendfile(requestedImagePath);
                                         }
                                     });
@@ -112,14 +112,16 @@ Ne.Class(Occipital, 'Server')({
         },
 
         _generateNewImage : function _generateNewImage (originalImagePath, requestedImagePath) {
-            var occ = this;
+            var occs = this;
 
-            fd = occ.fs.openSync(requestedImagePath, 'w');
-            occ.fs.writeSync(fd, 'hola');
-            occ.fs.closeSync(fd);
-        },
-
-        _processImage : function _processImage (req, res) {
+            occs.lobe.processSync(originalImagePath, requestedImagePath,
+                {
+                    outputOptions : [
+                        { fill     : '"#00fdff"' },
+                        { colorize : '50%' }
+                    ]
+                }
+            );
         },
 
         _moveImage : function _moveImage () {
