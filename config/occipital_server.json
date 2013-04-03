@@ -1,0 +1,6 @@
+{
+    "fallbackServer" : "http://default.breezi.com",
+    "storage" : {
+        "basePath" : "{app_root}/storage"
+    }
+}
