@@ -14,7 +14,7 @@ Ne.Class(Occipital, 'Server')({
         paramsPattern : RegExp([
           '\\/(',                                         // full_file_name
               '([^\\/\\.]+)',                             // file_name
-              '(?:\\.(\\d*x\\d*))?',                      // geometry, e.g 20x30, 40x, x100 - optional
+              '(?:\\.(\\d*x\\d*))?',                      // expectedSize, e.g 20x30, 40x, x100 - optional
               '(?:\\.([\\-\\d]+_[\\-\\d]+_\\d+_\\d+))?',  // crop, e.g 50-50-100-200 - optional
               '(?:\\.(\\w+=\\w+(?:&\\w+=\\w+)*))?',       // format options, e.g bgcolor=f7f7f7&fit=true - optional
               '\\.(\\w+)',                                // extension
@@ -121,17 +121,21 @@ Ne.Class(Occipital, 'Server')({
                 outputOptions : []
             };
 
-            // Transform current options to imagemagick options.
+            // Transform app options to imagemagick options.
             // This might be removable later if we update our APIs.
             if (params.crop) {
                 params.crop = params.crop.replace(/([0-9]+)_/, '$1x').replace(/_([0-9]+)_([0-9]+)$/, '+$1+$2');
                 options.outputOptions.push({ crop     : params.crop });
             }
 
-            if (params.geometry) {
-                options.outputOptions.push({ geometry   : params.geometry + "^" });
-                options.outputOptions.push({ gravity    : 'center' });
-                options.outputOptions.push({ crop       : params.geometry + '+0+0' });
+            if (params.expectedSize) {
+                if (params.crop) {
+                    options.outputOptions.push({ geometry   : params.expectedSize + "!" });
+                } else {
+                    options.outputOptions.push({ geometry   : params.expectedSize + "^" });
+                    options.outputOptions.push({ gravity    : 'center' });
+                    options.outputOptions.push({ crop   : params.expectedSize + '+0+0' });
+                }
             }
 
             return occs.lobe.processSync(originalImagePath, requestedImagePath, options);
@@ -181,7 +185,7 @@ Ne.Class(Occipital, 'Server')({
                     // Resize image to its maximum
                     occs.lobe.processSync(newFilePath, newFilePath, {
                         outputOptions : [
-                            { geometry : '2000x2000>' },
+                            { geometry : '4000000@' },
                         ]
                     });
 
@@ -199,7 +203,7 @@ Ne.Class(Occipital, 'Server')({
             return (matches) ? {
                 fullFileName  : matches[1],
                 fileName      : matches[2],
-                geometry      : matches[3],
+                expectedSize  : matches[3],
                 crop          : matches[4],
                 formatOptions : matches[5],
                 extension     : matches[6]
