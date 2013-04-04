@@ -1,6 +1,6 @@
 {
     "occipitalUtilityWrapper" : "imagemagick",
-    "fallbackServer" : "http://default.breezi.com",
+    "fallbackServer" : "http://localhost:3001",
     "storage" : {
         "basePath" : "{app_root}/storage"
     }

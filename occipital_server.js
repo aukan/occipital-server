@@ -103,31 +103,78 @@ Ne.Class(Occipital, 'Server')({
             });
 
             this.app.post('*', function (req, res) {
-                if (req.params.destiny) {
-                } else if (req.params.file) {
+                if (req.body.destiny) {
+                    occs._moveImage(req, res);
+                } else if (req.body) {
+                    occs._uploadImage(req, res);
+                } else {
+                    res.send(500, 'This request cannot be handled by this server.');
                 }
-
-                res.send('');
             });
         },
 
-        _generateNewImage : function _generateNewImage (originalImagePath, requestedImagePath) {
+        _generateNewImage : function _generateNewImage (originalImagePath, requestedImagePath, params) {
             var occs = this;
+            var options;
 
-            occs.lobe.processSync(originalImagePath, requestedImagePath,
-                {
-                    outputOptions : [
-                        { fill     : '"#00fdff"' },
-                        { colorize : '50%' }
-                    ]
-                }
-            );
+            options = {
+                outputOptions : []
+            };
+
+            // Transform current options to imagemagick options.
+            // This might be removable later if we update our APIs.
+            if (params.crop) {
+                params.crop = params.crop.replace(/([0-9]+)_/, '$1x').replace(/_([0-9]+)_([0-9]+)$/, '+$1+$2');
+                options.outputOptions.push({ crop     : params.crop });
+            }
+
+            if (params.geometry) {
+                options.outputOptions.push({ geometry   : params.geometry + "^" });
+                options.outputOptions.push({ gravity    : 'center' });
+                options.outputOptions.push({ crop       : params.geometry + '+0+0' });
+            }
+
+            return occs.lobe.processSync(originalImagePath, requestedImagePath, options);
         },
 
-        _moveImage : function _moveImage () {
+        _moveImage : function _moveImage (req, res) {
+            var occs = this;
             var sourcePath, destinyPath;
 
-            sourcePath = this.path.join(this.storagePath, req.fullPath);
+            sourcePath = this.path.join(this.storagePath, req.url);
+            destinyPath = this.path.join(this.storagePath, req.body.destiny);
+
+            occs.fs.exists(sourcePath, function(exists) {
+                if (exists) {
+                    occs.exec('mkdir -p ' + occs.path.dirname(destinyPath) + ' && mv ' + sourcePath + ' ' + destinyPath, function (error, stdout, stderr) {
+                        if (error !== null) {
+                            res.send(500, 'Move Error.');
+                        } else {
+                            occs.exec('rmdir -p ' + occs.path.dirname(sourcePath));
+                            res.send(req.body.destiny);
+                        }
+                    });
+                } else {
+                    res.send(500, 'Source file does not exist.');
+                }
+            });
+        },
+
+        _uploadImage : function _uploadImage (req, res) {
+            var occs = this;
+            var fileName = req.files.file.name.replace(/\..*\./,'.').replace(/ /,'_').replace(/[^a-zA-Z0-9\._]/,'');
+
+            // Moving file to its new location
+            newFilePath = occs.path.join(occs.basePath, req.url, fileName);
+            occs.exec('mkdir -p ' + occs.path.join(occs.basePath, req.url) + ' && mv ' + req.files.file.path + ' ' + newFilePath, function (error, stdout, stderr) {
+                if (error !== null) {
+                    req.send(500, 'Upload Error ' + req.url);
+                } else {
+                    // Resize image to its maximum
+                }
+            });
+
+            res.send('nothing');
         },
 
         _getOccipitalParams : function _getOccipitalParams (req) {
