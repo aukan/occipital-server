@@ -1,6 +1,6 @@
 {
     "occipitalUtilityWrapper" : "imagemagick",
-    "fallbackServer" : "http://localhost:3001",
+    "fallbackServer" : "http://default.profilepages.com",
     "storage" : {
         "basePath" : "{app_root}/storage"
     }

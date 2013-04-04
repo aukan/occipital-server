@@ -162,19 +162,32 @@ Ne.Class(Occipital, 'Server')({
 
         _uploadImage : function _uploadImage (req, res) {
             var occs = this;
-            var fileName = req.files.file.name.replace(/\..*\./,'.').replace(/ /,'_').replace(/[^a-zA-Z0-9\._]/,'');
+            var fileName;
+            var destinationFolder = occs.path.dirname(req.url);
+
+            // Set filename
+            if (req.url.match(/\/[^\/]+\.[^\/]+$/)) {
+                fileName = occs.path.basename(req.url);
+            } else {
+                fileName = req.files.file.name.replace(/\..*\./,'.').replace(/ /,'_').replace(/[^a-zA-Z0-9\._]/,'');
+            }
 
             // Moving file to its new location
-            newFilePath = occs.path.join(occs.basePath, req.url, fileName);
-            occs.exec('mkdir -p ' + occs.path.join(occs.basePath, req.url) + ' && mv ' + req.files.file.path + ' ' + newFilePath, function (error, stdout, stderr) {
+            newFilePath = occs.path.join(occs.storagePath, destinationFolder, fileName);
+            occs.exec('mkdir -p ' + occs.path.join(occs.storagePath, destinationFolder) + ' && mv ' + req.files.file.path + ' ' + newFilePath, function (error, stdout, stderr) {
                 if (error !== null) {
                     req.send(500, 'Upload Error ' + req.url);
                 } else {
                     // Resize image to its maximum
+                    occs.lobe.processSync(newFilePath, newFilePath, {
+                        outputOptions : [
+                            { geometry : '2000x2000>' },
+                        ]
+                    });
+
+                    res.send(occs.path.join('/', occs.path.dirname(req.url), fileName));
                 }
             });
-
-            res.send('nothing');
         },
 
         _getOccipitalParams : function _getOccipitalParams (req) {
