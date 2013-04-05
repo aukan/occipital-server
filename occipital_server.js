@@ -115,14 +115,16 @@ Ne.Class(Occipital, 'Server')({
 
         _generateNewImage : function _generateNewImage (originalImagePath, requestedImagePath, params) {
             var occs = this;
-            var options;
+            var options, extraOptions = {}, matches;
 
             options = {
                 outputOptions : []
             };
 
-            // Transform app options to imagemagick options.
-            // This might be removable later if we update our APIs.
+            /* 
+             * Transform app options to imagemagick options.
+             * This might be removable later if we update our APIs.
+             */
             if (params.crop) {
                 params.crop = params.crop.replace(/([0-9]+)_/, '$1x').replace(/_([0-9]+)_([0-9]+)$/, '+$1+$2');
                 options.outputOptions.push({ crop     : params.crop });
@@ -137,6 +139,30 @@ Ne.Class(Occipital, 'Server')({
                     options.outputOptions.push({ crop   : params.expectedSize + '+0+0' });
                 }
             }
+
+            if (params.extraOptions) {
+                matches = params.extraOptions.match(/blend+=([a-f0-9]+)/);
+                extraOptions.blend = (matches) ? matches[1] : null;
+                matches = params.extraOptions.match(/colorize+=([a-f0-9]+)/);
+                extraOptions.colorize = (matches) ? matches[1] : null;
+                matches = params.extraOptions.match(/opacity+=([a-f0-9]+)/);
+                extraOptions.opacity = (matches) ? matches[1] : null;
+
+                if (extraOptions.colorize) {
+                    options.outputOptions.push({ type     : 'GrayScaleMatte' });
+                    options.outputOptions.push({ fill     : '\'#' + extraOptions.colorize + '\'' });
+                    options.outputOptions.push({ colorize : extraOptions.opacity });
+                } else if (extraOptions.blend) {
+                    options.outputOptions.push({ background : '\'#' + extraOptions.blend + '\'' });
+                    options.outputOptions.push({ flatten    : '' });
+                    options.outputOptions.push({ alpha      : 'Off' });
+                    options.outputOptions.push({ fill       : '\'#' + extraOptions.blend + '\'' });
+                    options.outputOptions.push({ colorize   : 100 - extraOptions.opacity });
+                }
+            }
+
+            // Clean filename
+            requestedImagePath = requestedImagePath.replace(/([&=])/g, '\\$1');
 
             return occs.lobe.processSync(originalImagePath, requestedImagePath, options);
         },
@@ -205,7 +231,7 @@ Ne.Class(Occipital, 'Server')({
                 fileName      : matches[2],
                 expectedSize  : matches[3],
                 crop          : matches[4],
-                formatOptions : matches[5],
+                extraOptions  : matches[5],
                 extension     : matches[6]
             } : null;
         },
