@@ -2,6 +2,7 @@
     "name"         : "occipital-server",
     "description"  : "Occipital Server - Image Processing Server.",
     "version"      : "0.0.1",
+    "main"         : "lib/occipital_server.js",
     "private"      : true,
     "dependencies" : {
         "neon"      : "1.x",
