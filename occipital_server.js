@@ -105,6 +105,8 @@ Ne.Class(Occipital, 'Server')({
             this.app.post('*', function (req, res) {
                 if (req.body.destiny) {
                     occs._moveImage(req, res);
+                } else if (req.body.file64) {
+                    occs._uploadImageBase64(req, res);
                 } else if (req.body) {
                     occs._uploadImage(req, res);
                 } else {
@@ -211,13 +213,49 @@ Ne.Class(Occipital, 'Server')({
                     // Resize image to its maximum
                     occs.lobe.processSync(newFilePath, newFilePath, {
                         outputOptions : [
-                            { geometry : '4000000@' },
+                            { geometry : '\'2000x2000>\'' },
                         ]
                     });
 
                     res.send(occs.path.join('/', occs.path.dirname(req.url), fileName));
                 }
             });
+        },
+
+        _uploadImageBase64 : function _uploadImageBase64 (req, res) {
+            var occs = this;
+            var fileName;
+            var destinationFolder = occs.path.dirname(req.url);
+
+            // Set filename
+            if (req.url.match(/\/[^\/]+\.[^\/]+$/)) {
+                fileName = occs.path.basename(req.url);
+
+                // Moving file to its new location
+                newFilePath = occs.path.join(occs.storagePath, destinationFolder, fileName);
+                occs.exec('mkdir -p ' + occs.path.join(occs.storagePath, destinationFolder), function (error, stdout, stderr) {
+                    if (error !== null) {
+                        req.send(500, 'Upload Error ' + req.url);
+                    } else {
+                        occs.fs.writeFile(newFilePath, req.body.file64, 'base64', function (ferr) {
+                            if (ferr !== null) {
+                                req.send(500, 'Upload Error: Couldn\'t write to file. ' + req.url);
+                            } else {
+                                // Resize image to its maximum
+                                occs.lobe.processSync(newFilePath, newFilePath, {
+                                    outputOptions : [
+                                        { geometry : '\'2000x2000>\'' },
+                                    ]
+                                });
+
+                                res.send(occs.path.join('/', occs.path.dirname(req.url), fileName));
+                            }
+                        });
+                    }
+                });
+            } else {
+                req.send(500, 'Please specify the file name. ' + req.url);
+            }
         },
 
         _getOccipitalParams : function _getOccipitalParams (req) {
