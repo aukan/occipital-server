@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+
+var Occipital = require('./lib/occipital_server');
+var path = require('path');
+
+// Console options
+var optimist = require('optimist')
+    .boolean('h')
+    .options('c', {
+        alias : 'config',
+        default : path.join(__dirname, 'config/occipital_server.json'),
+                  describe : 'Path to configuration file.'
+    })
+    .options('p', {
+        alias : 'port',
+        default : 3001,
+                  describe : 'Port to listen on'
+    });
+var argv = optimist.argv;
+
+if (argv.h) {
+    console.log(optimist.help());
+    process.exit(0);
+}
+
+new Occipital.Server({
+    port : argv.p,
+    configFile : argv.c
+});

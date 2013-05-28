@@ -6,6 +6,7 @@
     "dependencies" : {
         "neon"      : "1.x",
         "occipital" : "git+ssh://git@github.com:aukan/occipital.git",
-        "express"   : "3.x"
+        "express"   : "3.x",
+        "optimist"  : "0.3.x"
     }
 }
