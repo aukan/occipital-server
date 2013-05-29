@@ -139,10 +139,10 @@ To start the occipital server:
 ```
 
 OPTIONS  
-  -c, --config  
-      Path to the configuration file.  
-  -p, --port  
-      Port on where the server will listen to requests.  
+&nbsp;&nbsp;-c, --config  
+&nbsp;&nbsp;&nbsp;&nbsp;Path to the configuration file.  
+&nbsp;&nbsp;-p, --port  
+&nbsp;&nbsp;&nbsp;&nbsp;Port on where the server will listen to requests.  
 
 #### As a module.
 
