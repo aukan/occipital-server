@@ -1,6 +1,6 @@
 {
     "occipitalUtilityWrapper" : "imagemagick",
-    "fallbackServer" : "http://default.profilepages.com",
+    "fallbackServer" : "http://google.com",
     "storage" : {
         "basePath" : "{app_root}/storage"
     }
