@@ -138,11 +138,13 @@ To start the occipital server:
 ./occipital_server [options]
 ```
 
+```
 OPTIONS  
-&nbsp;&nbsp;-c, --config  
-&nbsp;&nbsp;&nbsp;&nbsp;Path to the configuration file.  
-&nbsp;&nbsp;-p, --port  
-&nbsp;&nbsp;&nbsp;&nbsp;Port on where the server will listen to requests.  
+  -c, --config  
+      Path to the configuration file.  
+  -p, --port  
+      Port on where the server will listen to requests.  
+```
 
 #### As a module.
 
@@ -195,6 +197,7 @@ GET /some/path/image[.geometry][.crop][.extra_options].(extension)
 
 PARAMETERS
 
+```
 geometry (width)x(height)  
     This is the spected size of the result after the transformation. No matter what other options you give, like cropping, at the end the size of the image will be the one you give on geometry. 
     If only the geometry is given, then the original aspect ratio is preserved.
@@ -232,6 +235,7 @@ extra_options key=value&key=value
 
       GET /some/path/image.colorize=ffaa00&opacity=50.png  
       Colorize the image with the color #00ffff, the color will have an opacity of 50%
+```
 
 #### Upload an image.
 
@@ -243,6 +247,7 @@ Parameters: file
 
 PARAMETERS:
 
+```
 url  
     The url that you make the request to, indicates the path where the image will be saved. The path is required, the image filename is taken from the file, in case that it wasn't specified on the url.
 
@@ -255,6 +260,7 @@ EXAMPLE:
     PARAMETERS: file = <someimage.png>
 
     This will upload someimage.png to /some/path/image.png. It will also resize it to a maximum of 2000x2000 preserving the aspect ratio.
+```
 
 ##### Uploading an image with base64.
 
@@ -263,6 +269,7 @@ Parameters: file64
 
 PARAMETERS:
 
+```
 url  
     The url that you make the request to, indicates the path where the image will be saved. The path and image filename are required for this case.
 
@@ -273,6 +280,7 @@ EXAMPLE:
 
     POST /some/path/image.png  
     PARAMETERS: file64 = ewogICAgIm5hbWUi...
+```
 
 #### Move a file to a different path.
 
@@ -281,6 +289,7 @@ Parameters: destination = /destination/path
 
 PARAMETERS:
 
+```
 url  
     The url where the request is made indicates the source path of the image that will be moved.
 
@@ -292,3 +301,4 @@ EXAMPLE:
     destination = /image2.png
 
     This will move the image from /some/path/image.png to /image2.png
+```
