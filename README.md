@@ -66,7 +66,7 @@ Then open http://localhost:3001/google.png.
 
 ### Installing Prerequisites.
 
-#### NodeJs and npm.
+#### NodeJS and npm.
 
 You can find deeper information on how to install nodejs on http://nodejs.org. For a quick installation:
 
@@ -128,7 +128,7 @@ This is an example of the configuration file:
 
 ## Usage.
 
-### Starging the server.
+### Starting the server.
 
 #### As an executable.
 
@@ -138,11 +138,11 @@ To start the occipital server:
 ./occipital_server [options]
 ```
 
-OPTIONS
-  -c, --config
-      Path to the configuration file.
-  -p, --port
-      Port on where the server will listen to requests.
+OPTIONS  
+  -c, --config  
+      Path to the configuration file.  
+  -p, --port  
+      Port on where the server will listen to requests.  
 
 #### As a module.
 
@@ -186,7 +186,7 @@ GET /some/path/image.png
 
 Returns the image.
 
-PARAMETERS:
+PARAMETERS:  
 No parameters are needed.
 
 #### Transform and Get an image.
@@ -195,100 +195,100 @@ GET /some/path/image[.geometry][.crop][.extra_options].(extension)
 
 PARAMETERS
 
-geometry (width)x(height)
+geometry (width)x(height)  
     This is the spected size of the result after the transformation. No matter what other options you give, like cropping, at the end the size of the image will be the one you give on geometry. 
     If only the geometry is given, then the original aspect ratio is preserved.
 
-    Example:
-      GET /some/path/image.100x100.png
-      This will resize the image to 100x100 preserving the aspect ratio.
+    Example:  
+      GET /some/path/image.100x100.png  
+      This will resize the image to 100x100 preserving the aspect ratio.  
 
-crop (width)_(height)_(top)_(left)
+crop (width)_(height)_(top)_(left)   
     Crop the image with a square of width x height starting at (top, left). The result might be resized depending on geometry, 
     but if only crop is given then the result will have width x height of size.
 
-    Examples: 
-      GET /some/path/image.150_150_10_20
-      Crop the image with a square of 150x150 starting at the (10,20) pixel.
+    Examples:   
+      GET /some/path/image.150_150_10_20  
+      Crop the image with a square of 150x150 starting at the (10,20) pixel.  
 
-      GET /some/path/image.150_150_10_20.100x100.png
+      GET /some/path/image.150_150_10_20.100x100.png  
       Same as above, but rezise the result to 100x100.
 
-extra_options key=value&key=value
+extra_options key=value&key=value  
     Extra options right now includes blend, colorize and opacity.
 
-    blend color
+    blend color  
       Blend the original image with the specified background color (hex color). The opacity aplies to the original image.
 
-    colorize color
+    colorize color  
       Merges the original image with a color layer with the specified color (hex color). The opacity aplies to the color layer.
 
-    opacity percentage
+    opacity percentage  
       Indicates the opacity of a layer depending on the selected option, either blend or colorize. Its a number between 0 to 100.
 
-    Examples:
-      GET /some/path/image.blend=00ffff&opacity=80.png
+    Examples:  
+      GET /some/path/image.blend=00ffff&opacity=80.png  
       Blend the image with a background with color #00ffff, giving the original image an opacity of 80%
 
-      GET /some/path/image.colorize=ffaa00&opacity=50.png
+      GET /some/path/image.colorize=ffaa00&opacity=50.png  
       Colorize the image with the color #00ffff, the color will have an opacity of 50%
 
 #### Upload an image.
 
 ##### Uploading an image with multipart/form-data:
 
-POST /some/path/[image.png]
-Content-Type: multipart/form-data
+POST /some/path/[image.png]  
+Content-Type: multipart/form-data  
 Parameters: file
 
 PARAMETERS:
 
-url
+url  
     The url that you make the request to, indicates the path where the image will be saved. The path is required, the image filename is taken from the file, in case that it wasn't specified on the url.
 
-file
+file  
     This is the name of the field where the file comes on the request.
 
 EXAMPLE:
 
-    POST /some/path/image.png
+    POST /some/path/image.png  
     PARAMETERS: file = <someimage.png>
 
     This will upload someimage.png to /some/path/image.png. It will also resize it to a maximum of 2000x2000 preserving the aspect ratio.
 
 ##### Uploading an image with base64.
 
-POST /some/path/image.png
+POST /some/path/image.png  
 Parameters: file64
 
 PARAMETERS:
 
-url
+url  
     The url that you make the request to, indicates the path where the image will be saved. The path and image filename are required for this case.
 
-file64
+file64  
     The image encoded on base64.
 
 EXAMPLE:
 
-    POST /some/path/image.png
+    POST /some/path/image.png  
     PARAMETERS: file64 = ewogICAgIm5hbWUi...
 
 #### Move a file to a different path.
 
-POST /source/path/image.png
+POST /source/path/image.png  
 Parameters: destination = /destination/path
 
 PARAMETERS:
 
-url
+url  
     The url where the request is made indicates the source path of the image that will be moved.
 
-destination
+destination  
     The path where the image will be moved.
 
-EXAMPLE:
-    POST /some/path/image.png
+EXAMPLE:  
+    POST /some/path/image.png  
     destination = /image2.png
 
     This will move the image from /some/path/image.png to /image2.png
