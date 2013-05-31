@@ -15,6 +15,9 @@ var optimist = require('optimist')
         alias : 'port',
         default : 3001,
                   describe : 'Port to listen on'
+    })
+    .options('debug', {
+        default : false
     });
 var argv = optimist.argv;
 
@@ -24,6 +27,7 @@ if (argv.h) {
 }
 
 new Occipital.Server({
-    port : argv.p,
-    configFile : argv.c
+    port       : argv.p,
+    configFile : argv.c,
+    debug      : argv.debug
 });

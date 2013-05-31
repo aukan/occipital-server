@@ -100,6 +100,15 @@ cd occipital-server
 npm install
 ```
 
+### Updating to the latest occipital version.
+
+Remove node_modules and install packages again:
+
+```sh
+rm -r node_modules
+npm install
+```
+
 ## Configuration
 
 Occipital has a configuration file (by default on {app_root}/config/occipital_server.json) that has the following options:
