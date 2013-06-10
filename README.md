@@ -311,3 +311,30 @@ EXAMPLE:
 
     This will move the image from /some/path/image.png to /image2.png
 ```
+
+#### Bulk file movement.
+
+POST /api
+Parameters: movements = array
+
+PARAMETERS:
+
+```
+movements
+  Array containing the movements that are going to be performed. The format goes like the following:
+  
+  movements = [
+    {
+      source : /source/path,
+      destination : /destination/path
+    },
+    ...
+  ]
+
+  In html format, it would be something like:
+
+  movements[0][source] = /source/path/0
+  movements[0][destination] = /destination/path/0
+  movements[1][source] = /source/path/1
+  movements[1][destination] = /destination/path/1
+```
