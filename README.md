@@ -312,6 +312,30 @@ EXAMPLE:
     This will move the image from /some/path/image.png to /image2.png
 ```
 
+#### Copy a file to a different path.
+
+POST /source/path/image.png  
+Parameters: destination = /destination/path
+
+PARAMETERS:
+
+```
+url  
+    The url where the request is made indicates the source path of the image that will be moved.
+
+destination  
+    The path where the image will be moved.
+
+action
+    Whether this is a copy action, or a move action. In this case it has to be equal to "copy".
+
+EXAMPLE:  
+    POST /some/path/image.png  
+    destination = /image2.png
+
+    This will move the image from /some/path/image.png to /image2.png
+```
+
 #### Bulk file movement.
 
 POST /api
